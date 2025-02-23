@@ -10,4 +10,5 @@ class FileAction(Enum):
 
 class FileCallback(CallbackData, prefix="file"):
     file_id: str
+    folder_name : str
     action: FileAction

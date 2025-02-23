@@ -34,9 +34,9 @@ def edit_folder_markup():
         [KeyboardButton(text="Back")]
     ],resize_keyboard=True)
 
-def edit_file_inline(file_id,enable):
+def edit_file_inline(file_id,folder_name,enable):
     return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="🟢 Enabled",callback_data=FileCallback(file_id=file_id,action=FileAction.ENABLE).pack()) if enable else InlineKeyboardButton(text="🔴 Disabled",callback_data=FileCallback(file_id=file_id,action=FileAction.DISABLE).pack())],
-            [InlineKeyboardButton(text="Edit caption",callback_data=FileCallback(file_id=file_id,action=FileAction.EDIT_CAPTION).pack()),InlineKeyboardButton(text="Edit file",callback_data=FileCallback(file_id=file_id,action=FileAction.EDIT_FILE).pack())],
-            [InlineKeyboardButton(text="Delete File",callback_data=FileCallback(file_id=file_id,action=FileAction.DELETE_FILE).pack())]
+            [InlineKeyboardButton(text="🟢 Enabled",callback_data=FileCallback(file_id=file_id,folder_name=folder_name,action=FileAction.ENABLE).pack()) if enable else InlineKeyboardButton(text="🔴 Disabled",callback_data=FileCallback(file_id=file_id,folder_name=folder_name,action=FileAction.DISABLE).pack())],
+            [InlineKeyboardButton(text="Edit caption",callback_data=FileCallback(file_id=file_id,folder_name=folder_name,action=FileAction.EDIT_CAPTION).pack()),InlineKeyboardButton(text="Edit file",callback_data=FileCallback(file_id=file_id,folder_name=folder_name,action=FileAction.EDIT_FILE).pack())],
+            [InlineKeyboardButton(text="Delete File",callback_data=FileCallback(file_id=file_id,folder_name=folder_name,action=FileAction.DELETE_FILE).pack())]
         ])

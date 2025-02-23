@@ -13,3 +13,7 @@ class ViewFolder(StatesGroup):
 
 class AdminState(StatesGroup):
     main = State()
+
+class FileEdit(StatesGroup):
+    caption = State()
+    file = State()

@@ -147,3 +147,17 @@ def db_update_file_enable(id,status):
     except Exception as e:
         session.rollback()
         return False
+    
+def db_update_file_caption(id,caption : None | str):
+    file = db_get_file(id)
+    if not file:
+        return False
+    
+    file.caption = caption
+
+    try:
+        session.commit()
+        return file
+    except Exception as e:
+        session.rollback()
+        return False
