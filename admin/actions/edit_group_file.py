@@ -20,34 +20,34 @@ async def on_cancel(message : Message,state : FSMContext):
     await message.reply('Cancelled', reply_markup=edit_folder_markup())
 
 @router.message(F.text == admin_main_menu_markup().keyboard[0][1].text,IsAdmin(),AdminState.main)
-async def view_group_files(message : Message,state : FSMContext):
+async def view_folder_files(message : Message,state : FSMContext):
     folders = db_get_folders()
 
     if not len(folders):
-        await message.answer("There is no group exist")
+        await message.answer("There is no folder exist")
         return
     await state.set_state(ViewFolder.foldername)
     await state.update_data(page=1)
-    await message.answer("Select your group file to edit it",reply_markup=page_markup([group.name for group in folders],1,6))
+    await message.answer("Select your folder file to edit it",reply_markup=page_markup([folder.name for folder in folders],1,6))
 
 @router.message(F.text == "➡️",IsAdmin(),ViewFolder.foldername)
-async def view_group_files_next(message : Message,state : FSMContext):
+async def view_folder_files_next(message : Message,state : FSMContext):
     folders = db_get_folders()
 
     if not len(folders):
-        await message.answer("There is no group exist")
+        await message.answer("There is no folder exist")
         return
     data = await state.get_data()
     page = data["page"]
     await state.update_data(page=page + 1)
-    await message.answer("Select your group file to edit it",reply_markup=page_markup([group.name for group in folders],page + 1,6))
+    await message.answer("Select your folder file to edit it",reply_markup=page_markup([folder.name for folder in folders],page + 1,6))
 
 @router.message(F.text == "⬅️",IsAdmin(),ViewFolder.foldername)
-async def view_group_files_prev(message : Message,state : FSMContext):
+async def view_folder_files_prev(message : Message,state : FSMContext):
     folders = db_get_folders()
 
     if not len(folders):
-        await message.answer("There is no group exist")
+        await message.answer("There is no folder exist")
         return
     await state.set_state(ViewFolder.foldername)
 
@@ -55,28 +55,28 @@ async def view_group_files_prev(message : Message,state : FSMContext):
     page = data["page"]
     await state.update_data(page=page - 1)
 
-    await message.answer("Select your group file to edit it",reply_markup=page_markup([group.name for group in folders],page - 1,6))
+    await message.answer("Select your folder file to edit it",reply_markup=page_markup([folder.name for folder in folders],page - 1,6))
 
 @router.message(lambda F: F.text in [folder.name for folder in db_get_folders()],ViewFolder.foldername,IsAdmin())
-async def select_group_files(message : Message,state : FSMContext):
+async def select_folder_files(message : Message,state : FSMContext):
     await state.update_data(foldername=message.text)
     await state.set_state(ViewFolder.action)
-    await message.answer(f"Editing {html.bold(message.text)}\n\n{html.bold("View files")}\nView all files you uploaded and manage them\n\n{html.bold("Add new file")}\nAdd new file to this group file\n\n{html.bold("Edit description")}\nEdit group file description",reply_markup=edit_folder_markup())
+    await message.answer(f"Editing {html.bold(message.text)}\n\n{html.bold("View files")}\nView all files you uploaded and manage them\n\n{html.bold("Add new file")}\nAdd new file to this folder file\n\n{html.bold("Edit description")}\nEdit folder file description",reply_markup=edit_folder_markup())
 
 @router.message(F.text == edit_folder_markup().keyboard[0][0].text,ViewFolder.action,IsAdmin())
 async def action_view_files(message : Message,state : FSMContext):
     data = await state.get_data()
-    group = db_get_folder_name(data["foldername"])
-    file_ids : list[str] = group.file_ids
+    folder = db_get_folder_name(data["foldername"])
+    file_ids : list[str] = folder.file_ids
     for file_id in file_ids:
         file = db_get_file(file_id)
         if not file:
             file_ids.remove(file_id)
             continue
-        await send_file(message,file.file_id,file.caption,file.file_type,reply_markup=edit_file_inline(file_id,file.is_enable))
+        await send_file(message,file.file_id,file.caption,file.file_type,reply_markup=edit_file_inline(file_id,folder.name,file.is_enable))
     if not len(file_ids):
         await message.answer("There is no file exist on this folder")
-    db_update_folder_file_ids(group.link_id,file_ids)
+    db_update_folder_file_ids(folder.link_id,file_ids)
 
 @router.message(F.text == edit_folder_markup().keyboard[0][1].text,ViewFolder.action,IsAdmin())
 async def action_add_new_file(message : Message,state : FSMContext):
@@ -106,7 +106,7 @@ async def back_view_files(message : Message,state : FSMContext):
     folders = db_get_folders()
     data = await state.get_data()
     if not len(folders):
-        await message.answer("There is no group exist")
+        await message.answer("There is no folder exist")
         return
     await state.set_state(ViewFolder.foldername)
-    await message.answer("Select your group file to edit it",reply_markup=page_markup([folder.name for folder in folders],data["page"],6))
+    await message.answer("Select your folder file to edit it",reply_markup=page_markup([folder.name for folder in folders],data["page"],6))
