@@ -10,7 +10,7 @@ from aiogram.types import Message
 
 from utils import send_group_file
 from admin import admin_router
-from db import db_get_file,db_get_folder
+from db import db_get_folder
 
 from config import TOKEN
 
